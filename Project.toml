@@ -1,4 +1,4 @@
 [deps]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
+Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
