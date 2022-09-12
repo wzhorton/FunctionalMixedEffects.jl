@@ -31,7 +31,32 @@ function identity_mat(::Type{T}, n::Integer) where {T <: Real}
     Matrix{T}(I, n, n)
 end
 
+function conjugate_matrix_normal_regression(Y,X,U,V,C,D)
+    #= Model parameters:
+    Y (pxn) ~ MN(B*X, U, V)
+    B (pxq) ~ MN(M, C, D)
+    This draws a posterior value for B 
+    Note that no validation code is used to
+    either verify correct matrix formats or 
+    match dimensions, other than what is
+    implied by the operations themselves. 
+    
+    Also note that many straight inverses in this formula can't be avoided.
+    For the sake of readability, only one system solve is used=#
 
+    # I think the need for this is a bug. I've submitted a GitHub issue
+    Cinv = typeof(C) <: Diagonal ? inv(C) : inv(cholesky(C))
+    Dinv = typeof(D) <: Diagonal ? inv(D) : inv(cholesky(D))
+    Uinv = typeof(U) <: Diagonal ? inv(U) : inv(cholesky(U))
+    VinvXt = typeof(V) <: Diagonal ? V \ X' : cholesky(V) \ X'
+
+    C_post = typeof(C) <: Diagonal && typeof(U) <: Diagonal ? inv(Uinv + Cinv) : inv(cholesky(Uinv + Cinv))
+    D_post = inv(cholesky(X * VinvXt + Dinv))
+    M_post = C_post * (Uinv * Y * VinvXt + Cinv * M * Dinv) * D_post
+
+    Z = rand(Normal(), size(M_post))
+    return M_post + cholesky(C_post).L * Z * cholesky(D_post).U
+end
 
 
 #-------------------------#
