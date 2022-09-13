@@ -57,6 +57,7 @@ Conjugate matrix-normal matrix-normal regression coefficients
 
 Arguments:
 Y, X : Observation matrices
+M : Mean matrix
 U, V, C, D : Covariance Matrices
 
 Notes:
@@ -73,7 +74,7 @@ Returns: MatrixNormal object for posterior B|Y
 Exported: true ======================================================================#
 export conjugate_matrix_normal_regression
 
-function conjugate_matrix_normal_regression(Y,X,U,V,C,D)
+function conjugate_matrix_normal_regression(Y,X,U,V,M,C,D)
     # I think the need for this is a bug. I've submitted a GitHub issue
     Cinv = typeof(C) <: Diagonal ? inv(C) : inv(cholesky(C))
     Dinv = typeof(D) <: Diagonal ? inv(D) : inv(cholesky(D))
@@ -88,7 +89,30 @@ function conjugate_matrix_normal_regression(Y,X,U,V,C,D)
 end
 
 
+#=============================================================
+Conjugate matrix-normal inverse-gamma marginal variance
 
+Arguments:
+Y : Observation matrix
+M : Mean matrix
+R, V : Correlation/Covariance matrices
+a, b: Variance hyperparameters
 
+Notes:
+Model parameters follow this structure
+    Y ~ (mxn) MN(M, σR, V)
+    σ ~ IG(a,b)
+Note that marginal variance is unidentifiable, so we take the
+convention that U = σR is factored and V is untouched.
+Returns: InverseGamma object for posterior σ|Y
+Exported: true ===============================================#
+export conjugate_matrix_normal_variance
+
+function conjugate_matrix_normal_variance(Y,M,R,V,a,b)
+    m = size(Y,1)
+    n = size(Y,2)
+    exp_term = (V \ (Y-M)') * (R \ (Y-M))
+    return InverseGamma(a + n*m/2, b + tr(exp_term)/2)
+end
 
 end # module
