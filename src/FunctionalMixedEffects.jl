@@ -1,4 +1,4 @@
-#module FunctionalMixedEffects
+module FunctionalMixedEffects
 
 using LinearAlgebra
 using Distributions
@@ -6,7 +6,6 @@ using ProgressMeter
 
 include("MatrixUtils.jl")
 import .MatrixUtils as mutil
-
 
 #------------------#
 # Helper Functions #
@@ -170,12 +169,4 @@ function mcmc_fme(
     return chains
 end
 
-# Test code
-y = rand(101,10)
-Xfix = vcat([1,1,1,1,1,1,1,1,1,1]',rand(10)')
-Xrand = vcat([1,1,1,0,0,0,0,0,0,0]',[0,0,0,1,1,1,1,1,1,1]')
-hyps = HyperParametersFME()
-cfg = OutputConfigFME()
-out = mcmc_fme(y, Xfix, Xrand, 8, hyps, cfg)
-print(out.σ)
-#end # module
+end # module
