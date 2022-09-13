@@ -4,6 +4,7 @@ module MatrixUtils
 
 using Distributions
 using LinearAlgebra
+using BSplines
 
 
 #===================================================================================
@@ -82,7 +83,7 @@ function conjugate_matrix_normal_regression(Y,X,U,V,M,C,D)
     VinvXt = typeof(V) <: Diagonal ? V \ X' : cholesky(V) \ X'
 
     C_post = typeof(C) <: Diagonal && typeof(U) <: Diagonal ? inv(Uinv + Cinv) : inv(cholesky(Uinv + Cinv))
-    D_post = inv(cholesky(X * VinvXt + Dinv))
+    D_post = inv(cholesky(Hermitian(X * VinvXt + Dinv)))
     M_post = C_post * (Uinv * Y * VinvXt + Cinv * M * Dinv) * D_post
 
     return MatrixNormal(M_post, C_post, D_post)

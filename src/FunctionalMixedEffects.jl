@@ -2,7 +2,6 @@
 
 using LinearAlgebra
 using Distributions
-using BSplines
 using ProgressMeter
 
 include("MatrixUtils.jl")
@@ -124,7 +123,7 @@ function mcmc_fme(
 
     # Helper variables
     μ = isnothing(Xrand) ? Bfix*Xfix : Bfix*Xfix + Brand*Xrand
-    E_θ = Θ - μ
+    E_θ = θ - μ
 
     # Progress bar setup
     pbar = Progress(cfg.n_iterations; dt=1, desc="MCMC Progress:", showspeed=true)
@@ -135,7 +134,7 @@ function mcmc_fme(
         for thin in Base.OneTo(cfg.n_thin)
             # Update σ, θ, and E_θ
             σ = rand(mutil.conjugate_matrix_normal_variance(Y, H*θ, Im, In, hyps.a_σ, hyps.b_σ))
-            θ .= rand(mutil.conjugate_matrix_normal_regression(Y, H, σ*Im, In, μ, τ*Pi, In))
+            θ .= rand(mutil.conjugate_matrix_normal_regression(Y', H', In, σ*Im, μ', In, τ*Pi))'
             E_θ .= θ - μ
 
             # Update τ, Bfix, and μ
@@ -154,7 +153,7 @@ function mcmc_fme(
                     Brand, M_Brand, Ip, Iqrand, hyps.a_λ, hyps.b_λ))
             end
         end # thin loop
-        
+
         # Save iterations
         if it > zero(it)
             next!(pbar)
@@ -172,8 +171,11 @@ function mcmc_fme(
 end
 
 # Test code
-#y = rand(101,5)
-#Xfixed = vcat([1,1,1,1,1]',rand(5, 3)')
-#Xrand = vcat([1,1,1,0,0]',[0,0,0,1,1]')
-#out = mixed_functional_reg(y, Xfixed, Xrand, 8, 1000, 100)
+y = rand(101,10)
+Xfix = vcat([1,1,1,1,1,1,1,1,1,1]',rand(10)')
+Xrand = vcat([1,1,1,0,0,0,0,0,0,0]',[0,0,0,1,1,1,1,1,1,1]')
+hyps = HyperParametersFME()
+cfg = OutputConfigFME()
+out = mcmc_fme(y, Xfix, Xrand, 8, hyps, cfg)
+print(out.σ)
 #end # module
