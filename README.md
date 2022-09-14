@@ -70,7 +70,9 @@ $$
 \Theta \sim MN_{pn}(BX + UZ, \tau^2 P^{-1}, I_n)
 $$
 
-where $X$ contains the $(q\times n)$ design matrix (transpose) of fixed effects, $B$ is the $(p\times q)$ matrix of fixed effect coefficients, $Z$ contains the $(r \times n)$ design matrix (transpose) of random effects, $U$ is the $(p\times r)$ matrix of random effect coefficients, and $P$ is the $(p\times p)$ penalty matrix. For priors, $B \sim MN_{pq}(0,v_0 I_p,I_q)$ is used for some fixed $v_0$, and $U \sim MN_{pr}(0, \lambda^2 I_p, I_r)$ is used for a random $\lambda^2$. For each of $\sigma^2$, $\tau^2$, and $\lambda^2$, an inverse-gamma distribution is used for conjugacy.
+where $X$ contains the $(q\times n)$ design matrix (transpose) of fixed effects, $B$ is the $(p\times q)$ matrix of fixed effect coefficients, $Z$ contains the $(r \times n)$ design matrix (transpose) of random effects, $U$ is the $(p\times r)$ matrix of random effect coefficients, and $P$ is the $(p\times p)$ penalty matrix. For priors, $B \sim MN_{pq}(0,v_0 P^{-1},I_q)$ is used for some fixed $v_0$, and $U \sim MN_{pr}(0, \lambda^2 I_p, I_r)$ is used for a random $\lambda^2$. For each of $\sigma^2$, $\tau^2$, and $\lambda^2$, an inverse-gamma distribution is used for conjugacy. 
+
+Note that reusing $P^{-1}$ is actually required for the posterior to be matrix normal, otherwise it become a more general reshaped vector normal with non-kronecker product covariance (the sum of kronecker products, actually). This is also true for using $I_n$ for both $Y$ and $\Theta$. Technically, a scaling factor is permitted, but the code is structured to require an exact match because of non-identifiability issues. As a rule of thumb, for any given likelihood-prior pair where both are matrix normal, the covariance matrix whose dimension is common to both must be equivalent (e.g. $Y$ and $\Theta$ both contain $n$ as a dimension, so the $n\times n$ covariance must be shared.)
 
 ### Sampling Scheme
 
