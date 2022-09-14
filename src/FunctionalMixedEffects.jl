@@ -87,7 +87,7 @@ function mcmc_fme(
         cfg::OutputConfigFME
     )
     # Input checks
-    @assert size(Y,2) == size(Xfix,2) == size(Xrand,2)
+    @assert size(Y,2) == size(Xfix,2) # == size(Xrand,2)
     if isnothing(Xrand) && cfg.save_random_effects 
         error("Cannot save random effects; Xrand is missing.")
     end
