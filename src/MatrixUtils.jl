@@ -59,34 +59,39 @@ Conjugate matrix-normal matrix-normal regression coefficients
 Arguments:
 Y, X : Observation matrices
 M : Mean matrix
-U, V, C, D : Covariance Matrices
+U, V, D : Covariance Matrices
 
 Notes:
 Model parameters follow this structure:
     Y (pxn) ~ MN(B*X, U, V)
-    B (pxq) ~ MN(M, C, D)
+    B (pxq) ~ MN(M, U, D)
 Dimensions are checked implicitly. Diagonal matrices are handled separately due to
 Cholesky compatibility. Other special types may not work, but Hermitian does work.
 Against common advice, this function caches inverted matrices rather than solving
 a the linear system each time. This is required in several places, so for the
 sake of readability has been done in all cases.
 
+The fact that U is common between Y and B is critical. Otherwise, the posterior is
+not matrix normal, but a more general reshaped vector normal with non-kronecker
+covariance structure (sum of kroneckers actually). Technically, a scalar multiple
+difference is allowed, but because this is unidentifiable, users are required to
+put marginal variances on V and/or D
+
 Returns: MatrixNormal object for posterior B|Y
 Exported: true ======================================================================#
 export conjugate_matrix_normal_regression
 
-function conjugate_matrix_normal_regression(Y,X,U,V,M,C,D)
-    # I think the need for this is a bug. I've submitted a GitHub issue
-    Cinv = typeof(C) <: Diagonal ? inv(C) : inv(cholesky(C))
+function conjugate_matrix_normal_regression(Y,X,U,V,M,D)
+    # Issue #46721, inv(cholesky(Diagonal(...))) fails.
+    # Error fixed in Julia 1.8, type specialization pull request placed
     Dinv = typeof(D) <: Diagonal ? inv(D) : inv(cholesky(D))
     Uinv = typeof(U) <: Diagonal ? inv(U) : inv(cholesky(U))
     VinvXt = typeof(V) <: Diagonal ? V \ X' : cholesky(V) \ X'
 
-    C_post = typeof(C) <: Diagonal && typeof(U) <: Diagonal ? inv(Uinv + Cinv) : inv(cholesky(Uinv + Cinv))
     D_post = inv(cholesky(Hermitian(X * VinvXt + Dinv)))
-    M_post = C_post * (Uinv * Y * VinvXt + Cinv * M * Dinv) * D_post
+    M_post = (Y * VinvXt + M * Dinv) * D_post
 
-    return MatrixNormal(M_post, C_post, D_post)
+    return MatrixNormal(M_post, U, D_post)
 end
 
 

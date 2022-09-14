@@ -21,8 +21,8 @@ end
 #----------------------#
 export OutputConfigFME
 Base.@kwdef struct OutputConfigFME
-    n_iterations::Int64 = 5000
-    n_burnin::Int64 = 1000
+    n_iterations::Int64 = 15000
+    n_burnin::Int64 = 5000
     n_thin::Int64 = 1
     save_random_effects::Bool = false
     save_theta::Bool = false
@@ -117,7 +117,7 @@ function mcmc_fme(
     # MCMC variables
     chains = ChainsFME(n, p, qfix, qrand, cfg)
     σ = 1.0
-    τ = 1.0
+    τ = 1000
     λ = 1.0
     θ = zeros(Float64, p, n)
     Bfix = zeros(Float64, p, qfix)
@@ -136,20 +136,20 @@ function mcmc_fme(
         for thin in Base.OneTo(cfg.n_thin)
             # Update σ, θ, and E_θ
             σ = rand(mutil.conjugate_matrix_normal_variance(Y, H*θ, Im, In, hyps.a_σ, hyps.b_σ))
-            θ .= rand(mutil.conjugate_matrix_normal_regression(Y', H', In, σ*Im, μ', In, τ*Pi))'
+            θ .= rand(mutil.conjugate_matrix_normal_regression(Y', H', In, σ*Im, μ', τ*Pi))'
             E_θ .= θ - μ
 
             # Update τ, Bfix, and μ
             τ = rand(mutil.conjugate_matrix_normal_variance(θ, μ, Pi, In, hyps.a_τ, hyps.b_τ))
             Bfix .= rand(mutil.conjugate_matrix_normal_regression(
-                E_θ + Bfix*Xfix, Xfix, τ*Pi, In, M_Bfix, hyps.v_fix*Ip, Iqfix)
+                E_θ + Bfix*Xfix, Xfix, Pi, τ*In, M_Bfix, hyps.v_fix*Iqfix)
             )
             μ .= Bfix*Xfix
 
             # Update Brand, μ, and λ
             if !isnothing(Xrand)
                 Brand = rand(mutil.conjugate_matrix_normal_regression(
-                    E_θ + Brand*Xrand, Xrand, τ*Pi, In, M_Brand, λ*Ip, Iqrand))
+                    E_θ + Brand*Xrand, Xrand, Pi, τ*In, M_Brand, λ*Iqrand))
                 μ .+= Brand*Xrand
                 λ = rand(mutil.conjugate_matrix_normal_variance(
                     Brand, M_Brand, Ip, Iqrand, hyps.a_λ, hyps.b_λ))
