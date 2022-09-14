@@ -70,7 +70,7 @@ function ChainsFME(p::Int64, qfix::Int64, qrand::Union{Int64,Nothing}, cfg::Outp
         σ = zeros(Float64, cfg.n_iterations),
         τ = zeros(Float64, cfg.n_iterations),
         λ = zeros(Float64, cfg.n_iterations),
-        θ = cfg.save_random_effects ? zeros(Float64, p, n, cfg.n_iterations) : zeros(Float64, 0, 0, 0),
+        θ = cfg.save_theta ? zeros(Float64, p, n, cfg.n_iterations) : zeros(Float64, 0, 0, 0),
         Bfix = zeros(Float64, p, qfix, cfg.n_iterations),
         Brand = cfg.save_random_effects ? zeros(Float64, p, qrand, cfg.n_iterations) : zeros(Float64, 0, 0, 0)
     )
