@@ -65,7 +65,7 @@ Base.@kwdef mutable struct ChainsFME{T <: AbstractFloat}
     Brand::Array{T,3}
 end
 
-function ChainsFME(p::Int64, qfix::Int64, qrand::Union{Int64,Nothing}, cfg::OutputConfigFME)
+function ChainsFME(n::Int64, p::Int64, qfix::Int64, qrand::Union{Int64,Nothing}, cfg::OutputConfigFME)
     ChainsFME(
         σ = zeros(Float64, cfg.n_iterations),
         τ = zeros(Float64, cfg.n_iterations),
@@ -115,7 +115,7 @@ function mcmc_fme(
     M_Brand = isnothing(Xrand) ? nothing : zeros(Float64, p, qrand)
 
     # MCMC variables
-    chains = ChainsFME(p, qfix, qrand, cfg)
+    chains = ChainsFME(n, p, qfix, qrand, cfg)
     σ = 1.0
     τ = 1.0
     λ = 1.0
