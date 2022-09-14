@@ -19,7 +19,7 @@ end
 #----------------------#
 # Model config options #
 #----------------------#
-
+export OutputConfigFME
 Base.@kwdef struct OutputConfigFME
     n_iterations::Int64 = 5000
     n_burnin::Int64 = 1000
@@ -38,7 +38,7 @@ end
 #-----------------------#
 # Model hyperparameters #
 #-----------------------#
-
+export HyperParametersFME
 Base.@kwdef struct HyperParametersFME{T<:AbstractFloat}
     a_σ::T = 3.
     b_σ::T = 1.
@@ -77,7 +77,7 @@ end
 #-------------------------#
 # Hierarchical Model MCMC #
 #-------------------------#
-
+export mcmc_fme
 function mcmc_fme(
         Y::Matrix,
         Xfix::Matrix,
