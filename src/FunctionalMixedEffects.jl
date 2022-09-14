@@ -25,12 +25,13 @@ Base.@kwdef struct OutputConfigFME
     n_burnin::Int64 = 1000
     n_thin::Int64 = 1
     save_random_effects::Bool = false
+    save_theta::Bool = false
     function OutputConfigFME(n_iterations::Int64, n_burnin::Int64, 
-            n_thin::Int64, save_random_effects::Bool)
+            n_thin::Int64, save_random_effects::Bool, save_theta::Bool)
         if any(x->x <= zero(Int64),(n_iterations, n_burnin, n_thin))
             error("Non-positive config count found")
         end
-        new(n_iterations, n_burnin, n_thin, save_random_effects)
+        new(n_iterations, n_burnin, n_thin, save_random_effects, save_theta)
     end
 end
 
@@ -46,7 +47,7 @@ Base.@kwdef struct HyperParametersFME{T<:AbstractFloat}
     b_τ::T = 1.
     a_λ::T = 3.
     b_λ::T = 1.
-    v_fix::T = 1000.
+    v_fix::T = 10000.
     # B priors are fixed
 end
 
@@ -59,6 +60,7 @@ Base.@kwdef mutable struct ChainsFME{T <: AbstractFloat}
     σ::Vector{T}
     τ::Vector{T}
     λ::Vector{T}
+    θ::Array{T,3}
     Bfix::Array{T,3}
     Brand::Array{T,3}
 end
@@ -68,6 +70,7 @@ function ChainsFME(p::Int64, qfix::Int64, qrand::Union{Int64,Nothing}, cfg::Outp
         σ = zeros(Float64, cfg.n_iterations),
         τ = zeros(Float64, cfg.n_iterations),
         λ = zeros(Float64, cfg.n_iterations),
+        θ = cfg.save_random_effects ? zeros(Float64, p, n, cfg.n_iterations) : zeros(Float64, 0, 0, 0),
         Bfix = zeros(Float64, p, qfix, cfg.n_iterations),
         Brand = cfg.save_random_effects ? zeros(Float64, p, qrand, cfg.n_iterations) : zeros(Float64, 0, 0, 0)
     )
@@ -162,6 +165,9 @@ function mcmc_fme(
             chains.Bfix[:,:,it] = Bfix
             if cfg.save_random_effects
                 chains.Brand[:,:,it] = Brand
+            end
+            if cfg.save_theta
+                chains.θ[:,:,it] = θ
             end
         end
     end # iter loop
