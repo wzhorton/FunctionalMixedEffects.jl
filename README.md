@@ -93,17 +93,17 @@ $$
 where $B$ is $p\times q$ and unknown, $X$ is $(q\times n)$ and known, $U$ is known $(p\times p)$ covariance, and $V$ is $(n\times n)$ known covariance. Suppose $B$ is the prior:
 
 $$
-B \sim MN_{pq}(M, C, D)
+B \sim MN_{pq}(M, U, D)
 $$
 
-where $M$ is known $(p\times q)$ mean matrix, $C$ is known $(p\times p)$ covariance, and $D$ is $(q\times q)$ known covariance. Using Bayes rule, the matrix normal density (which can be found at the respective [Wikipedia page](https://en.wikipedia.org/wiki/Matrix_normal_distribution)), and a lot of algebra (which looks similar to completing the square in the linear regression vector case), we get this conditional distribution result:
+where $M$ is known $(p\times q)$ mean matrix, $U$ is the restriction mentioned earlier, and $D$ is $(q\times q)$ known covariance. Using Bayes rule, the matrix normal density (which can be found at the respective [Wikipedia page](https://en.wikipedia.org/wiki/Matrix_normal_distribution)), and a lot of algebra (which looks similar to completing the square in the linear regression vector case), we get this conditional distribution result:
 
 $$
-B|\Theta \sim MN_pq(M^* , C^* , D^*)
+B|\Theta \sim MN_pq(M^* , U , D^*)
 $$
 
-where $C^* = (U^{-1} + C^{-1})^{-1}$ is the posterior first covariance, $D^* = (XV^{-1}X' + D^{-1})^{-1}$ is the second covariance, and 
+where $D^* = (XV^{-1}X' + D^{-1})^{-1}$ is the second posterior covariance, and 
 
 $$
-M^* = C^* (U^{-1}\Theta V^{-1}X' + C^{-1}MD^{-1}) D^*
+M^* = (\Theta V^{-1}X' + MD^{-1}) D^*
 $$
