@@ -33,7 +33,7 @@ Base.@kwdef struct OutputConfigFME{N <: Integer}
     save_theta::Bool = false
     function OutputConfigFME(p::Integer, n_iterations::Integer, n_burnin::Integer, 
             n_thin::Integer, save_random_effects::Bool, save_theta::Bool)
-        if any(x->x <= zero(x),(n_iterations, n_burnin, n_thin))
+        if any(x->x <= zero(x),(p, n_iterations, n_burnin, n_thin))
             error("Non-positive config count found")
         end
         new(p, n_iterations, n_burnin, n_thin, save_random_effects, save_theta)
