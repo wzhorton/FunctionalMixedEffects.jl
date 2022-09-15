@@ -31,12 +31,12 @@ Base.@kwdef struct OutputConfigFME{N <: Integer}
     n_thin::N = 1
     save_random_effects::Bool = false
     save_theta::Bool = false
-    function OutputConfigFME(p::Integer, n_iterations::Integer, n_burnin::Integer, 
-            n_thin::Integer, save_random_effects::Bool, save_theta::Bool)
+    function OutputConfigFME(p::N, n_iterations::N, n_burnin::N, 
+            n_thin::Integer, save_random_effects::Bool, save_theta::Bool) where {N <: Integer}
         if any(x->x <= zero(x),(p, n_iterations, n_burnin, n_thin))
             error("Non-positive config count found")
         end
-        new(p, n_iterations, n_burnin, n_thin, save_random_effects, save_theta)
+        new{N}(p, n_iterations, n_burnin, n_thin, save_random_effects, save_theta)
     end
 end
 
@@ -72,11 +72,11 @@ Base.@kwdef struct DataFME{T<:AbstractFloat, N<:Integer}
     qrand::Union{N,Nothing}
     qcent::Union{N,Nothing}
     function DataFME(
-            Y::Matrix,
-            Xfix::Union{Matrix,Nothing},
-            Xrand::Union{Matrix,Nothing},
-            Xcent::Union{Matrix,Nothing}
-        )
+            Y::Matrix{T},
+            Xfix::Union{Matrix{T},Nothing},
+            Xrand::Union{Matrix{T},Nothing},
+            Xcent::Union{Matrix{T},Nothing}
+        ) where {T <: AbstractFloat, N <: Integer}
         @assert isnothing(Xrand) == isnothing(Xcent) # Proper hierarchical centering
         @assert !isnothing(Xrand) || !isnothing(Xfix) # At least one set of covariates
         n = size(Y,2)
@@ -84,7 +84,7 @@ Base.@kwdef struct DataFME{T<:AbstractFloat, N<:Integer}
         qfix = isnothing(Xfix) ? nothing : size(Xfix,1)
         qrand = isnothing(Xrand) ? nothing : size(Xrand,1)
         qcent = isnothing(Xcent) ? nothing : size(Xcent,1)
-        new(Y, Xfix, Xrand, Xcent, n, m, qfix, qrand, qcent)
+        new{T,N}(Y, Xfix, Xrand, Xcent, n, m, qfix, qrand, qcent)
     end
 end
 
