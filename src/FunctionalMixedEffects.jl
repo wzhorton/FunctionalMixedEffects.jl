@@ -60,7 +60,7 @@ end
 #-------------------#
 # Modal data object #
 #-------------------#
-
+export DataFME
 Base.@kwdef struct DataFME{T<:AbstractFloat, N<:Integer}
     Y::Union{Matrix{T},Nothing}
     Xfix::Union{Matrix{T},Nothing}
