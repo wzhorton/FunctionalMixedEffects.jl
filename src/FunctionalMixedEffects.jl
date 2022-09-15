@@ -76,7 +76,7 @@ Base.@kwdef struct DataFME{T<:AbstractFloat, N<:Integer}
             Xfix::Union{Matrix{T},Nothing},
             Xrand::Union{Matrix{T},Nothing},
             Xcent::Union{Matrix{T},Nothing}
-        ) where {T <: AbstractFloat, N <: Integer}
+        ) where {T <: AbstractFloat}
         @assert isnothing(Xrand) == isnothing(Xcent) # Proper hierarchical centering
         @assert !isnothing(Xrand) || !isnothing(Xfix) # At least one set of covariates
         n = size(Y,2)
@@ -84,7 +84,7 @@ Base.@kwdef struct DataFME{T<:AbstractFloat, N<:Integer}
         qfix = isnothing(Xfix) ? nothing : size(Xfix,1)
         qrand = isnothing(Xrand) ? nothing : size(Xrand,1)
         qcent = isnothing(Xcent) ? nothing : size(Xcent,1)
-        new{T,N}(Y, Xfix, Xrand, Xcent, n, m, qfix, qrand, qcent)
+        new{T,typeof(n)}(Y, Xfix, Xrand, Xcent, n, m, qfix, qrand, qcent)
     end
 end
 
