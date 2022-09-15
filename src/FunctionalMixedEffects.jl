@@ -150,9 +150,9 @@ function mcmc_fme(
     τ = 1.0
     λ = 1.0
     θ = zeros(Float64, cfg.p, data.n)
-    Bfix = isnothing(data.qfix) ? nothing : zeros(Float64, cfg.p, data.qfix, cfg.n_iterations)
-    Brand = isnothing(data.qrand) ? nothing : zeros(Float64, cfg.p, data.qrand, cfg.n_iterations)
-    Bcent = isnothing(data.qcent) ? nothing : zeros(Float64, cfg.p, data.qcent, cfg.n_iterations)
+    Bfix = isnothing(data.qfix) ? nothing : zeros(Float64, cfg.p, data.qfix)
+    Brand = isnothing(data.qrand) ? nothing : zeros(Float64, cfg.p, data.qrand)
+    Bcent = isnothing(data.qcent) ? nothing : zeros(Float64, cfg.p, data.qcent)
 
     # Helper variables
     μ = !isnothing(data.qfix) && !isnothing(data.qrand) ? Bfix * data.Xfix + Brand * data.Xrand : 
