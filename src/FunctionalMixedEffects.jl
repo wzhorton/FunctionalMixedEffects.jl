@@ -79,6 +79,9 @@ Base.@kwdef struct DataFME{T<:AbstractFloat, N<:Integer}
         ) where {T <: AbstractFloat}
         @assert isnothing(Xrand) == isnothing(Xcent) # Proper hierarchical centering
         @assert !isnothing(Xrand) || !isnothing(Xfix) # At least one set of covariates
+        if !isnothing(Xrand)
+            @assert size(Xrand,1) == size(Xcent,2) # Check mapping is proper
+        end
         n = size(Y,2)
         m = size(Y,1)
         qfix = isnothing(Xfix) ? nothing : size(Xfix,1)
@@ -208,10 +211,10 @@ function mcmc_fme(
                 chains.θ[:,:,it] = θ
             end
 
-            if !isnothing(qfix)
+            if !isnothing(data.qfix)
                 chains.Bfix[:,:,it] = Bfix
             end
-            if !isnothing(qrand)
+            if !isnothing(data.qrand)
                 chains.Bcent[:,:,it] = Bcent
                 if cfg.save_random_effects
                     chains.Brand[:,:,it] = Brand
