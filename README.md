@@ -99,7 +99,7 @@ $$
 where $M$ is known $(p\times q)$ mean matrix, $U$ is the restriction mentioned earlier, and $D$ is $(q\times q)$ known covariance. Using Bayes rule, the matrix normal density (which can be found at the respective [Wikipedia page](https://en.wikipedia.org/wiki/Matrix_normal_distribution)), and a lot of algebra (which looks similar to completing the square in the linear regression vector case), we get this conditional distribution result:
 
 $$
-B|\Theta \sim MN_pq(M^* , U , D^*)
+B|\Theta \sim MN_{pq}(M^* , U , D^*)
 $$
 
 where $D^* = (XV^{-1}X' + D^{-1})^{-1}$ is the second posterior covariance, and 
