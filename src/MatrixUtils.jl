@@ -27,7 +27,7 @@ function first_order_penalty_mat(p::Integer)
         pmat[i+1,i] = -1.
         pmat[i,i+1] = -1.
     end
-    pmat[p,p] = 1.
+    pmat[p,p] = 2.
     return Hermitian(pmat)
 end
 
