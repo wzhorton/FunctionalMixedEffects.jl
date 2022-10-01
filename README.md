@@ -20,31 +20,31 @@ The main reason to use splines for functional modeling is dimension-reduction. I
 
 ### B-spline model statement
 
-Suppose $n$ curves are observed, labeled $i=1,\ldots,n$. Each curve has a vector of observation values, denoted $\underset{-}{y_i}$, with length $m$. The hierarchical model used in this package to represent each curve as a B-spline is:
+Suppose $n$ curves are observed, labeled $i=1,\ldots,n$. Each curve has a vector of observation values, denoted $\underline{y_i}$, with length $m$. The hierarchical model used in this package to represent each curve as a B-spline is:
 
 $$
-\underset{-}{y_i} \sim N_m(H\underset{-}{\theta_i}, \sigma^2 I_m)
+\underline{y_i} \sim N_m(H\underline{\theta_i}, \sigma^2 I_m)
 $$
 
-where $\underset{-}{\theta_i}$ is the $p$-dimensional B-spline coefficient vector, $H$ is the $(m\times p)$ B-spline design matrix, $\sigma^2$ is the error variance between the spline curve and the data curve, and $I_m$ is the $(m\times m)$ identity matrix. [Lang and Brezger (2004)](https://www.tandfonline.com/doi/abs/10.1198/1061860043010) provide a *P-spline* or penalized B-spline prior that makes it easier to select $p$:
+where $\underline{\theta_i}$ is the $p$-dimensional B-spline coefficient vector, $H$ is the $(m\times p)$ B-spline design matrix, $\sigma^2$ is the error variance between the spline curve and the data curve, and $I_m$ is the $(m\times m)$ identity matrix. [Lang and Brezger (2004)](https://www.tandfonline.com/doi/abs/10.1198/1061860043010) provide a *P-spline* or penalized B-spline prior that makes it easier to select $p$:
 
 $$
-\underset{-}{\theta_i} \sim N_p(\underset{-}{0}, \tau^2 P^{-1})
+\underline{\theta_i} \sim N_p(\underline{0}, \tau^2 P^{-1})
 $$
 
-where $P$ is known as a first-order penalty matrix. See the original paper, [Telesca and Inoue (2008)](https://www.tandfonline.com/doi/abs/10.1198/016214507000001139), or [Horton et al. (2021)](https://www.tandfonline.com/doi/full/10.1080/00401706.2020.1841033) for the exact matrix form. Selecting $p$ can be challenging: too small and the fitted function is not flexible enough, but too large and overfit becomes a problem. The penalized B-spline addresses this by penalizing the second derivative, allowing users to choose quite large $p$, even $p>m$, without overfit.
+where $P$ is known as a first-order penalty matrix. See the original paper, [Telesca and Inoue (2008)](https://www.tandfonline.com/doi/abs/10.1198/016214507000001139), or [Horton et al. (2021)](https://www.tandfonline.com/doi/full/10.1080/00401706.2020.1841033) for examples of the exact matrix form, including minor adjustments for rank deficiency. Selecting $p$ can be challenging: too small and the fitted function is not flexible enough, but too large and overfit becomes a problem. The penalized B-spline addresses this by penalizing the second derivative, allowing users to choose quite large $p$, even $p>m$, without overfit.
 
 ## Mixed Model Background
 
 Mixed models are a tool used to control for non-independent errors in a regression. For example, clinical trials can often involve giving treatment to an individual multiple times (repeated measures problem). In that setting, each treatment response is not perfectly independent; observations may be correlated within an individual. The effect of an individual, often called a *random effect*, is usually not of interest, but is important to control for so that the underlying regression assumptions are met and the true treatment effect, often called a *fixed effect* can be accurately studied. Mixed models offer a framework for simultaneously accounting for random effects and estimating fixed effects.
 
-In a Bayesian setting, mixed models are handled via the priors. Suppose that the $n$-dimensional observation vector $\underset{-}{y}$ contains all recorded values for some experiment and that the $(n\times p)$ matrix $X$ contains all fixed effect values (such as treatment labels) and that the $(n\times q)$ matrix $Z$ contains all random effect values (such as personal ID labels). The regression model is written as:
+In a Bayesian setting, mixed models are handled via the priors. Suppose that the $n$-dimensional observation vector $\underline{y}$ contains all recorded values for some experiment and that the $(n\times p)$ matrix $X$ contains all fixed effect values (such as treatment labels) and that the $(n\times q)$ matrix $Z$ contains all random effect values (such as personal ID labels). The regression model is written as:
 
 $$
-\underset{-}{y} \sim N_n(X\underset{-}{\beta} + Z\underset{-}{u}, \sigma^2I_n)
+\underline{y} \sim N_n(X\underline{\beta} + Z\underline{u}, \sigma^2I_n)
 $$
 
-where $\underset{-}{\beta}$ is the vector of fixed effect coefficients and $\underset{-}{u}$ is the vector of random effect coefficients. For priors, the fixed effects have $\underset{-}{\beta} \sim N_p(\underset{-}{\mu_0},\Sigma_0)$ for fixed mean and covariance. The random effects have $\underset{-}{u} \sim N_q(\underset{-}{0}, W)$ where the covariance matrix $W$ is also given some prior (Wishart, factored, etc.). The important difference in the priors is in the fact that $\Sigma_0$ is fixed while $W$ is random (and therefore suggestible by the data). A larger effect coming from $W$ suggests that the individual random effects have a significant effect on the outcomes, and therefore the fixed effects may be less reliable. 
+where $\underline{\beta}$ is the vector of fixed effect coefficients and $\underline{u}$ is the vector of random effect coefficients. For priors, the fixed effects have $\underline{\beta} \sim N_p(\underline{\mu_0},\Sigma_0)$ for fixed mean and covariance. The random effects have $\underline{u} \sim N_q(\underline{0}, W)$ where the covariance matrix $W$ is also given some prior (Wishart, factored, etc.). The important difference in the priors is in the fact that $\Sigma_0$ is fixed while $W$ is random (and therefore suggestible by the data). A larger effect coming from $W$ suggests that the individual random effects have a significant effect on the outcomes, and therefore the fixed effects may be less reliable. 
 
 There is a lot more to be said about mixed models (See the [Mixed Model Wikipedia page](https://en.wikipedia.org/wiki/Mixed_model) for loads of detail). This package is motivated primarily by a repeated measured perspective, and the template scripts found in the `FunctionalMixedEffects.Rpkg` repo support this. However, the model fitting code itself is somewhat general (within the functional framework) and users are free to design their own suitable mixed model.
 
@@ -58,7 +58,7 @@ The model structure implemented in this pacakge can be written in several ways, 
 
 ### Hierarchical Model Statement
 
-Suppose we observe $n$ curves $\underset{-}{y_i}$ for $i=1,\ldots,n$ each containing $m$ points. Organize these into columns, forming the $(m\times n)$ matrix $Y$. The data likelihood is given by:
+Suppose we observe $n$ curves $\underline{y_i}$ for $i=1,\ldots,n$ each containing $m$ points. Organize these into columns, forming the $(m\times n)$ matrix $Y$. The data likelihood is given by:
 
 $$
 Y \sim MN_{mn}(H \Theta, \sigma^2 I_m, I_n)
