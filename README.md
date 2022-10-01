@@ -1,6 +1,6 @@
 # FunctionalMixedEffects.jl
 
-This package provides backend calculations for fitting functional mixed effects models. For the R package front-end, see the `FunctionalMixedEffects.Rpkg` repository.
+This package provides backend calculations for fitting functional mixed effects models. For the R package front-end, see the [FunctionalMixedEffects.Rpkg](github.com/wzhorton/FunctionalMixedEffects.Rpkg) repository.
 
 ---
 
