@@ -54,7 +54,7 @@ With background established, the purpose of this package is to fuse the two idea
 
 The model structure implemented in this package can be summarized as follows: model each observed curve using the P-spline framework, then place a multivariate mixed model structure on the spline coefficients. In this way, each covariate, fixed and random, will have an interpretable functional effect on the outcome. The individual random effects will account for the fact that curves coming from a specific subject are more similar than those from another subject, and will appropriately adjust the certainty levels around the functional fixed effects of interest.
 
-The model structure implemented in this pacakge can be written in several ways, with the most concise involving the [matrix normal distribution](https://en.wikipedia.org/wiki/Matrix_normal_distribution). While this is overkill for most applications, the matrix normal distribution effectively summarizes the model statement and the sampling scheme. The section below describes a looped version of the model (i.e. $i=1,\ldots,n$) which is clearer to understand, but lacks the implementation details embedded in the matrix version.
+The model structure implemented in this pacakge can be written in several ways, with the most concise involving the [matrix-normal distribution](https://en.wikipedia.org/wiki/Matrix_normal_distribution). While this is overkill for most applications, the matrix normal distribution effectively summarizes the model statement and the sampling scheme. Although looped model descriptions (i.e. $i=1,\ldots,n$) are more common and potentially easier to understand, they lack the implementation details embedded in the matrix version.
 
 ### Hierarchical Model Statement
 
@@ -72,9 +72,9 @@ $$
 
 where $X_f$ contains the $(q_f\times n)$ design matrix (transpose) of fixed effects, $B_f$ is the $(p\times q_f)$ matrix of fixed effect coefficients, $X_r$ contains the $(q_r \times n)$ design matrix (transpose) of random effects, $B_r$ is the $(p\times q_r)$ matrix of random effect coefficients, and $P$ is the $(p\times p)$ penalty matrix. For priors, $B_f \sim MN_{pq_f}(0,v_0 P^{-1},I_{q_f})$ is used for some fixed $v_0$, and $B_r \sim MN_{pq_r}(B_c X_c, \lambda^2 P^{-1}, I_{q_r})$ is used for a random $\lambda^2$.
 
-The mean structure for $B_r$ allows for more complex structure for the random effects. For example, a hierarchical centering structure could be used to produce identifiable estimates of grouped random effects (nested within subject). Of course, hierarchical centering can be cast as a sum-to-zero constraint within either the fixed or random effects component, so it is up to the user to construct a suitable model. In the more general sense, $B_c$ is the $(p\times q_c)$ matrix of global random effect coefficients and $X_c$ is the $(q_c \times q_r)$ design matrix mapping the random effects to their hierarchical centers. Finally, $B_c$ is assigned a prior $B_c \sim MN_{pq_c}(0, v_c P^{-1}, I_{q_c})$. For each of $\sigma^2$, $\tau^2$, and $\lambda^2$, an inverse-gamma prior is used for conjugacy.  
+The mean structure for $B_r$ allows for more complex structure for the random effects. For example, a hierarchical centering structure could be used to produce identifiable estimates of grouped random effects (i.e. subjects nested within groups). Of course, hierarchical centering can be cast as a sum-to-zero constraint within either the fixed or random effects component, so it is up to the user to construct a suitable model. In the more general sense, $B_c$ is the $(p\times q_c)$ matrix of global random effect coefficients and $X_c$ is the $(q_c \times q_r)$ design matrix mapping the random effects to their hierarchical centers. Finally, $B_c$ is assigned a prior $B_c \sim MN_{pq_c}(0, v_c P^{-1}, I_{q_c})$. For each of $\sigma^2$, $\tau^2$, and $\lambda^2$, an inverse-gamma prior is used for conjugacy.  
 
-Note that reusing $P^{-1}$ is actually required for the posterior to be matrix normal, otherwise it become a more general reshaped vector normal with non-kronecker product covariance (the sum of kronecker products, actually). This is also true for using $I_n$ for both $Y$ and $\Theta$. Technically, a scaling factor is permitted, but the code is structured to require an exact match because of non-identifiability issues. As a rule of thumb, for any given likelihood-prior pair where both are matrix normal, the covariance matrix whose dimension is common to both must be equivalent (e.g. $Y$ and $\Theta$ both contain $n$ as a dimension, so the $n\times n$ covariance must be shared.)
+Note that reusing $P^{-1}$ is actually required for the posterior to be matrix-normal, otherwise it become a more general reshaped vector normal with non-kronecker product covariance (the sum of kronecker products, actually). This is also true for using $I_n$ for both $Y$ and $\Theta$. Technically, a scaling factor is permitted, but the code is structured to require an exact match because of non-identifiability issues. As a rule of thumb, for any given likelihood-prior pair where both are matrix normal, the covariance matrix whose dimension is common to both must be equivalent (e.g. $Y$ and $\Theta$ both contain $n$ as a dimension, so the $n\times n$ covariance must be shared.)
 
 ### Sampling Scheme
 
@@ -84,7 +84,7 @@ This model was designed, as many Bayesian hierarchical models are, to be full of
 - Sampling the spline parameters $\Theta$ can either be done individually or jointly. If done individually, the well known normal-normal regression conjugacy result can be used (see (Bayesian linear regression Wiki](https://en.wikipedia.org/wiki/Bayesian_linear_regression) page).
 - The same procedure can be used to sample $U$ and $B$, which is a matrix extension to the conjugate normal-normal result. However, this result does not appear to be online, so it is provided below in a general form. To sample $U$, use the result on $\Theta - BX$, and to sample $B$, similarly use the result on $\Theta - UZ$.
 
-## Matrix Normal Conjugacy Result
+## Matrix-Normal Conjugacy Result
 
 Suppose a $(p\times n)$ matrix $\Theta$ is modeled:
 
@@ -98,7 +98,7 @@ $$
 B \sim MN_{pq}(M, U, D)
 $$
 
-where $M$ is known $(p\times q)$ mean matrix, $U$ is the restriction mentioned earlier, and $D$ is $(q\times q)$ known covariance. Using Bayes rule, the matrix normal density (which can be found at the respective [Wikipedia page](https://en.wikipedia.org/wiki/Matrix_normal_distribution)), and a lot of algebra (which looks similar to completing the square in the linear regression vector case), we get this conditional distribution result:
+where $M$ is known $(p\times q)$ mean matrix, $U$ is the restriction mentioned earlier, and $D$ is $(q\times q)$ known covariance. Using Bayes rule, the matrix-normal density (which can be found at the respective [Wikipedia page](https://en.wikipedia.org/wiki/Matrix_normal_distribution)), and a lot of algebra (which looks similar to completing the square in the linear regression vector case), we get this conditional distribution result:
 
 $$
 B|\Theta \sim MN_{pq}(M^* , U , D^*)
