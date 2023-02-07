@@ -86,7 +86,6 @@ function conjugate_matrix_normal_regression(Y,X,U,V,M,D)
     # Issue #46721, inv(cholesky(Diagonal(...))) fails.
     # Error fixed in Julia 1.8, type specialization pull request placed
     Dinv = typeof(D) <: Diagonal ? inv(D) : inv(cholesky(D))
-    Uinv = typeof(U) <: Diagonal ? inv(U) : inv(cholesky(U))
     VinvXt = typeof(V) <: Diagonal ? V \ X' : cholesky(V) \ X'
 
     D_post = inv(cholesky(Hermitian(X * VinvXt + Dinv)))
